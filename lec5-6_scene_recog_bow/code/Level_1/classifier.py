@@ -191,18 +191,21 @@ class Classifier(object):
         ylist = []
         cluster_model = MiniBatchKMeans(k)
         for i,(class_name,img_paths) in enumerate(img_set.items()):
+            print(class_name)
             kmeans_fit = []
             for img_path in img_paths:
                 img_desc,y = descriptors.orb(img_path,[],[],class_name)
-                img_desc_array = np.asarray(img_desc).flatten()
-                print(img_desc_array)
-                kmeans_fit.append(img_desc_array.tolist())
+                #print(img_desc_array)
+                #print(type(img_desc))
+                for descriptor in img_desc:
+                    kmeans_fit.append(descriptor)
+                ylist.append(i)
             if self.istrain:
                 bow = descriptors.cluster_features(kmeans_fit,cluster_model)
             else:
                 bow = descriptors.img_to_vect(kmeans_fit,cluster_model)
+            print(bow.shape)
             X.append(bow)
-            ylist.append(i)
         ##################################################################################
         #                                END OF YOUR CODE                                #
         ##################################################################################
@@ -215,5 +218,6 @@ class Classifier(object):
         # More Hint: (2.) can be achieved using descriptors.cluster_features (you write it!)
         # during training phase (if self.istrain=True) and descriptors.img_to_vect 
         # (you write it too!) during testing phase (if self.istrain=False)
-
-        return X, y, cluster_model
+        print("X.shape",X.shape)
+        print("Y.shape",ylist.shape)
+        return X, ylist, cluster_model

@@ -18,7 +18,7 @@ def orb(img_path,img_descs,y,class_number):
     ##################################################################################
     #                             BEGINNING OF YOUR CODE                             #
     ##################################################################################
-    print(img_path)
+    #print(img_path)
 
     img = cv2.imread(img_path)
     orb = cv2.ORB_create(MAX_FEATURES)
@@ -58,8 +58,8 @@ def cluster_features(img_descs, cluster_model):
     ##################################################################################
     #                             BEGINNING OF YOUR CODE                             #
     ##################################################################################
-    cluster_model.fit(img_descs)
     print(img_descs)
+    cluster_model.fit(img_descs)
     words = cluster_model.predict(img_descs)
     # print(img_descs.shape)
     # print(len(words))
