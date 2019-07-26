@@ -201,11 +201,11 @@ class Classifier(object):
                     kmeans_fit.append(descriptor)
                 ylist.append(i)
             if self.istrain:
-                bow = descriptors.cluster_features(kmeans_fit,cluster_model)
+                bow,cluster_model = descriptors.cluster_features(kmeans_fit,cluster_model)
             else:
-                bow = descriptors.img_to_vect(kmeans_fit,cluster_model)
-            print(bow.shape)
-            X.append(bow)
+                bow,cluster_model = descriptors.img_to_vect(kmeans_fit,cluster_model)
+            print(len(bow))
+            X.append(bow.tolist())
         ##################################################################################
         #                                END OF YOUR CODE                                #
         ##################################################################################
@@ -218,6 +218,7 @@ class Classifier(object):
         # More Hint: (2.) can be achieved using descriptors.cluster_features (you write it!)
         # during training phase (if self.istrain=True) and descriptors.img_to_vect 
         # (you write it too!) during testing phase (if self.istrain=False)
-        print("X.shape",X.shape)
-        print("Y.shape",ylist.shape)
+        print("X.shape",np.array(X).shape)
+        print("Y.shape",np.array(ylist).shape)
+        print(X)
         return X, ylist, cluster_model

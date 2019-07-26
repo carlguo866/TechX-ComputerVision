@@ -3,8 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-MAX_FEATURES=300
-
 def orb(img_path,img_descs,y,class_number):
     """
     Calculate the ORB descriptors for an image.
@@ -20,8 +18,8 @@ def orb(img_path,img_descs,y,class_number):
     ##################################################################################
     #print(img_path)
 
-    img = cv2.imread(img_path)
-    orb = cv2.ORB_create(MAX_FEATURES)
+    img = cv2.imread(img_path,0)
+    orb = cv2.ORB_create()
     keypoints, img_desc = orb.detectAndCompute(img, None)
    # img_descs = np.vstack([this_img_descs,img_descs])
     ##################################################################################
@@ -38,6 +36,9 @@ def orb(img_path,img_descs,y,class_number):
 
     return img_desc,y
 
+def kmeans_fit_function(img_descs,cluster_model):
+    cluster_model.fit(img_descs)
+    return img_descs
 def cluster_features(img_descs, cluster_model):
     """
     Cluster the training features using the cluster_model
@@ -58,7 +59,7 @@ def cluster_features(img_descs, cluster_model):
     ##################################################################################
     #                             BEGINNING OF YOUR CODE                             #
     ##################################################################################
-    print(img_descs)
+    #print(img_descs)
     cluster_model.fit(img_descs)
     words = cluster_model.predict(img_descs)
     # print(img_descs.shape)
