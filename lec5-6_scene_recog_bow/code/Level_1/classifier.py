@@ -78,9 +78,9 @@ class Classifier(object):
         
         # SVM instantiation:
 
-        svm = SVC()
+        svm = SVC(kernel="poly")
         svm.fit(x,y)
-
+        print(svm.score(x,y))
         # SVM fitting:
 
         
@@ -157,16 +157,16 @@ class Classifier(object):
         ##################################################################################
         
         # SVM prediction:
-        predicts = svm.predict(x,y)
-        
+        predicts = svm.predict(x)
+        print(svm.score(x,y))
         # SVM evaluation:
-        result = svm.decision_function(predicts)
+        #result = svm.decision_function(predicts)
         
         ##################################################################################
         #                                END OF YOUR CODE                                #
         ##################################################################################
 
-        return result,y
+        return predicts,y
 
     def compute_descriptors(self, img_set, cluster_model, k=200):
         """
@@ -186,26 +186,53 @@ class Classifier(object):
         #                             BEGINNING OF YOUR CODE                             #
         ##################################################################################
         #print(img_set)
-
-        X = []
-        ylist = []
-        cluster_model = MiniBatchKMeans(k)
+        print("K" , k)
+        ylist = np.float32([]).reshape(0, 1)
+        if cluster_model is None:
+            cluster_model = MiniBatchKMeans(k)
+        predicted_all = np.float32([]).reshape(0, k)
         for i,(class_name,img_paths) in enumerate(img_set.items()):
             print(class_name)
-            kmeans_fit = []
-            for img_path in img_paths:
-                img_desc,y = descriptors.orb(img_path,[],[],class_name)
-                #print(img_desc_array)
-                #print(type(img_desc))
-                for descriptor in img_desc:
-                    kmeans_fit.append(descriptor)
-                ylist.append(i)
+            #print(img_paths)
+            imgs = descriptors.path_to_img(img_paths)
+            descriptors_2d = []
+            descriptors_3d = []
+            for img in imgs:
+                img_desc,_ = descriptors.orb(img,[],[],class_name)
+                if img_desc is not None:
+                    for descriptor in img_desc:
+                        descriptors_2d.append(descriptor)
+                    descriptors_3d.append(img_desc)
+                    ylist = np.vstack((ylist,i))
             if self.istrain:
-                bow,cluster_model = descriptors.cluster_features(kmeans_fit,cluster_model)
-            else:
-                bow,cluster_model = descriptors.img_to_vect(kmeans_fit,cluster_model)
-            print(len(bow))
-            X.append(bow.tolist())
+                cluster_model.fit(descriptors_2d)
+                centers = cluster_model.cluster_centers_
+                print("the center has shape of ", centers.shape)
+            for img_desc in descriptors_3d:
+                if img_desc is not None:
+                    predict_img = descriptors.img_to_vect(img_desc,cluster_model)
+                    predicted_all = np.vstack((predicted_all,predict_img))
+
+
+
+            # print(class_name)
+            # kmeans_fit = []
+            # kmeans_fit2 = []
+            # for img_path in img_paths:
+            #     img_desc,y = descriptors.orb(img_path,[],[],class_name)
+            #     #print(img_desc_array)
+            #     #print(type(img_desc))
+            #     for descriptor in img_desc:
+            #         kmeans_fit.append(descriptor)
+            #     kmeans_fit2.append(img_desc)
+            # if self.istrain:
+            #     descriptors.kmeans_fit_function(kmeans_fit,cluster_model)
+            # for descriptor in kmeans_fit2:
+            #     print(descriptor)
+            #     bow,cluster_model = descriptors.img_to_vect(descriptor,cluster_model)
+            #     ylist.append(i)
+            #     X.append(bow)
+
         ##################################################################################
         #                                END OF YOUR CODE                                #
         ##################################################################################
@@ -218,7 +245,9 @@ class Classifier(object):
         # More Hint: (2.) can be achieved using descriptors.cluster_features (you write it!)
         # during training phase (if self.istrain=True) and descriptors.img_to_vect 
         # (you write it too!) during testing phase (if self.istrain=False)
-        print("X.shape",np.array(X).shape)
-        print("Y.shape",np.array(ylist).shape)
-        print(X)
-        return X, ylist, cluster_model
+        print("X.shape",predicted_all.shape)
+        print("Y.shape",ylist.shape)
+        print(predicted_all)
+        print(ylist)
+        return predicted_all, ylist, cluster_model
+
