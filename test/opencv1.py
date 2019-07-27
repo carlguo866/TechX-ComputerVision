@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import os, sys
 from PIL import Image
-# img = cv2.imread("messi5.jpg")
+# img = cv2.imread("image2.jpg")
 # # print(img)
 # px = img[100,100]
 # blue = img[100,100,0]
@@ -27,7 +27,7 @@ from PIL import Image
 # flags = [i for i in dir(cv2) if i.startswith('COLOR_')]
 # print(flags)
 # from PIL import Image
-im = Image.open("messi5.jpg")
+im = Image.open("image2.jpg")
 print(im.format, im.size, im.mode)
 # box = (100, 100, 400, 400)
 # region = im.crop(box)
