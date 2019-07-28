@@ -14,7 +14,7 @@ def main():
 
     # classifier training and testing
     classifier = Classifier(data)
-    vocab_size = 400 # up to you to decide the tradeoff between acc and speed
+    vocab_size = 800 # up to you to decide the tradeoff between acc and speed
     svm, cluster_model = classifier.train(k=vocab_size, verbose=True)
     result, labels = classifier.test(svm, cluster_model, k=vocab_size, verbose=True)
 
