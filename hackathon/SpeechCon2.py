@@ -2,6 +2,7 @@ import speech_recognition as sr
 import wave
 import pyaudio
 import webbrowser
+import test
 
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
@@ -14,7 +15,7 @@ WAVE_OUTPUT_FILENAME = "output.wav"
 # 录音并写入文件
 def record_wave():
     p = pyaudio.PyAudio()
-
+    test.start()
     stream = p.open(format=FORMAT,
                     channels=CHANNELS,
                     rate=RATE,
@@ -30,6 +31,7 @@ def record_wave():
         frames.append(data)
 
     print("* done recording")
+    test.end()
 
     stream.stop_stream()
     stream.close()
@@ -41,7 +43,6 @@ def record_wave():
     wf.setframerate(RATE)
     wf.writeframes(b''.join(frames))
     wf.close()
-
 
 r = sr.Recognizer()
 
